@@ -1,0 +1,31 @@
+#Chip 8 Specifications
+#---------------------------------------------------------------------
+#Memory: 4096 bytes
+#Registers: 16 8bit registers
+#Keyboard: 16 input keyboard
+#Display: 64x32 pixel display
+#Sound: 2 timers delay timer to 0 and sound timer to 0
+#Index Counter to 0
+#PC Counter to 0x200 since first 512 bytes are reserved
+#Stack []
+#---------------------------------------------------------------------
+
+#Initiliaze components
+def initialize(self):
+  self.clear()
+  self.memory = [0]*4096
+  self.regi = [0]*16
+  self.keyInputs = [0]*16
+  self.display = [0]*64*32
+  self.delayTimer = 0
+  self.soundTimer = 0
+  self.shouldDraw = False
+  self.index = 0
+  self.opcode = 0
+  self.pc = 0x200
+  self.stack = []
+
+  i=0
+  while i < 80:
+    self.memory[i] = self.fonts[i]
+    i+=1
