@@ -8,18 +8,26 @@
 #Index Counter to 0
 #PC Counter to 0x200 since first 512 bytes are reserved
 #Stack []
+
+#0x000 (0) - 0x1FF (511) interpreter
+#0x050 (80) - 0x0A0 (160) font set
+#0x200 (512) - 0xFFF (4095) rom and ram
+
 #---------------------------------------------------------------------
 
 #Initiliaze components
 def initialize(self):
   self.clear()
+
   self.memory = [0]*4096
   self.regi = [0]*16
   self.keyInputs = [0]*16
   self.display = [0]*64*32
+
   self.delayTimer = 0
   self.soundTimer = 0
   self.shouldDraw = False
+  
   self.index = 0
   self.opcode = 0
   self.pc = 0x200
@@ -29,3 +37,27 @@ def initialize(self):
   while i < 80:
     self.memory[i] = self.fonts[i]
     i+=1
+
+def main():
+
+  #create render system and input callbacks
+  setupDisplay()
+  setupInput()
+
+
+  #initialize chip8 system and load game into memory
+  initialize()
+  loadGame('pong')
+
+
+  #Emulation loop
+  while True:
+    emulateCycle()
+
+    if(drawFlag):
+      drawGraphics()
+
+    setKeys()
+  
+  return
+
