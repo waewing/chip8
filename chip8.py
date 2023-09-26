@@ -1,3 +1,5 @@
+import logging
+
 #Chip 8 Specifications
 #---------------------------------------------------------------------
 #Memory: 4096 bytes
@@ -38,26 +40,35 @@ def initialize(self):
     self.memory[i] = self.fonts[i]
     i+=1
 
-def main():
+#read in a rom using binary bit by bit into memory
+def loadGame(self,rom_path):
+  logging.log("Loading %s..." % rom_path)
+  binary = open("rom_path","rb").read()
+  for i in range(len(binary)-1):
+    self.memory[0x200 + i] = ord(binary[i])
+
+
+def main(self):
 
   #create render system and input callbacks
-  setupDisplay()
-  setupInput()
+  self.setupDisplay()
+  self.setupInput()
 
 
   #initialize chip8 system and load game into memory
-  initialize()
-  loadGame('pong')
+  self.initialize()
+  print(initialize.memory)
+  self.loadGame('pong')
 
 
   #Emulation loop
   while True:
-    emulateCycle()
+    self.emulateCycle()
 
-    if(drawFlag):
-      drawGraphics()
+    if(self.drawFlag):
+      self.drawGraphics()
 
-    setKeys()
+    self.setKeys()
   
   return
 
