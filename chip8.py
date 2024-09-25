@@ -496,12 +496,13 @@ class Emulator:
     self.opCodes(opcode)
 
   
-#read in a rom using binary bit by bit into memory
-def loadGame(self,rom_path):
-  logging.log("Loading %s..." % rom_path)
-  binary = open("rom_path","rb").read()
-  for i in range(len(binary)-1):
-    self.memory[0x200 + i] = ord(binary[i])
+  #read in a rom using binary bit by bit into memory
+  def loadGame(self,rom_path):
+    file = open(rom_path, 'rb')
+    rom = []
+    for f in range(file.read()):
+      rom.append(f)
+    self.Memory[0x200:] = rom
 
 
 def main(self):
