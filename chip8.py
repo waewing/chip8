@@ -484,8 +484,8 @@ class Emulator:
       case _:
         print("Invalid OpCode")
 
-    self.pc+=2 
-  
+    self.pc+=2
+
   def execution(self):
     index = self.pc
     high = self.hexHandler(self.Memory[index])
@@ -493,38 +493,106 @@ class Emulator:
 
     opcode = high + low
 
-    self.opCodes(opcode)
+    self.opCodes(opcode)    
 
+  def draw(self, Vx, Vy, sprite):
+    collision = False
+
+    spriteBits = []
+    for i in sprite:
+      binary = bin(i)
+      line = list(binary[2:])
+      fillNum = 8 - len(line)
+      line = ['0'] * fillNum + line
+      spriteBits.append(line)
+
+    for i in range(len(spriteBits)):
+      for j in range(8):
+        try:
+          if self.grid[Vy + i][Vx + j] == 1 and int(spriteBit[i][j]) == 1:
+            collision = True
+          
+        except:
+          continue
+    
+    return collision
   
-  #read in a rom using binary bit by bit into memory
-  def loadGame(self,rom_path):
-    file = open(rom_path, 'rb')
+  def clear(self):
+    for i in range(len(self.grid)):
+      for j in range(len(self.grid[0])):
+        self.grid[i][j] = 0
+
+  def readProg(self, filename):
+    rom = self.covertProg(filename)
+
+    offset = int('0x200', 16)
+    for i in rom:
+      self.Memory[offset] = i
+      offset += 1
+
+  def convertProg(self, filename):
     rom = []
-    for f in range(file.read()):
-      rom.append(f)
-    self.Memory[0x200:] = rom
 
+    with open(filename, 'rb') as f:
+      wholeProgram = f.read()
 
-def main(self):
-
-  #create render system and input callbacks
-  self.setupDisplay()
-  self.setupInput()
-
-
-  #initialize chip8 system and load game into memory
-  self.initialize()
-  print(initialize.memory)
-  self.loadGame('pong')
-
-
-  #Emulation loop
-  while True:
-    self.emulateCycle()
-
-    if(self.drawFlag):
-      self.drawGraphics()
-
-    self.setKeys()
+      for i in wholeProgram:
+        opcode = i
+        rom.append(opcode)
+    
+    return rom
   
-  return
+  def hexHandler(self, Num):
+    newHex = hex(Num)[2:]
+    if len(newHex) == 1:
+      newHex = '0' + newHex
+    
+    return newHex
+  
+  def keyHandler(self):
+    for event in pygame.event.get():
+      if event in pygame.QUIT:
+        sys.exit()
+
+      elif event.type == pygame.USEREVENT+1:
+        self.delayTimer.countDown()
+      
+      elif event.type == pygame.KEYDOWN:
+        try:
+          targetKey = self.keyDict[event.key]
+          self.keys[targetKey] = True
+
+        except:
+          pass
+
+      elif event.type == pygame.KEYUP:
+        try:
+          targetKey = self.keyDict[event.key]
+          self.keys[targetKey] = False
+
+        except:
+
+          pass
+
+  def mainloop(self):
+    clock = pygame.time.Clock()
+
+    while True:
+      clock.tick(300)
+      self.keyHandler()
+      self.soundTimer.beep()
+      self.execution()
+      self.display()
+
+  def display(self):
+    for i in range(0, len(self.grid)):
+      for j in range(0, len(self.grid[0])):
+        cellColor = self.zeroColor
+
+        if self.grid[i][j] == 1:
+          cellColor = self.oneColor
+
+        pygame.draw.rect(self.screen, cellColor, [j * self.size, i * self.size, self.size, self.size], 0)
+
+    pygame.display.flip()
+
