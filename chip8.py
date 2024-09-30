@@ -77,8 +77,6 @@ class SoundTimer:
 
 class Emulator:
   def __init__(self):
-    self.clear()
-
     self.Memory = [0x0]*4096
 
     fonts = [
@@ -110,7 +108,7 @@ class Emulator:
     self.KeyInputs = Register(16)
 
     self.pc = 0x200
-
+    self.stack = []
     self.delayTimer = DelayTimer()
     self.soundTimer = SoundTimer()
 
@@ -231,7 +229,7 @@ class Emulator:
         vX = int(opcode[1],16)
         nn = int(opcode[2:],16)
         self.Registers[vX].value += vX
-        self.Registers.checkCarry()
+        self.Registers[vX].checkCarry()
 
       #Complete
       case '8': 
@@ -523,7 +521,7 @@ class Emulator:
         self.grid[i][j] = 0
 
   def readProg(self, filename):
-    rom = self.covertProg(filename)
+    rom = self.convertProg(filename)
 
     offset = int('0x200', 16)
     for i in rom:
@@ -551,7 +549,7 @@ class Emulator:
   
   def keyHandler(self):
     for event in pygame.event.get():
-      if event in pygame.QUIT:
+      if event.type == pygame.QUIT:
         sys.exit()
 
       elif event.type == pygame.USEREVENT+1:
@@ -596,3 +594,6 @@ class Emulator:
 
     pygame.display.flip()
 
+chip8 = Emulator()
+chip8.readProg(sys.argv[1])
+chip8.mainloop()
