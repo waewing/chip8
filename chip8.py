@@ -164,7 +164,7 @@ class Emulator:
     pos4 = opcode[3]
 
     match pos1:
-      #0 Complete
+      
       case '0':
         #00E0 and 00EE
 
@@ -176,19 +176,16 @@ class Emulator:
            case 'e':
             #00EE - return from a subroutine, set pc to top of stack then subtract 1 from stack pointer
             self.pc = self.stack.pop()
-
-      #1 Complete    
+       
       case '1':
         #1nnn - jump to location at nnn, set pc to nnn
         self.pc = int(opcode[1:],16) - 2 
-      
-      #2 Complete
+       
       case '2':
         #2nnn - call subroutine at nnn, increments the stack pointer, puts the current PC on top of the stack ,sets PC to nnn.
         self.stack.append(self.pc)
         self.pc = int(opcode[1:],16) - 2 
-        
-      #Complete
+          
       case '3':
         #3xnn - skip the next instruction if Vx = nn, checks if Vx = nn if so increment PC by 2
         vX = int(opcode[1],16)
@@ -196,8 +193,7 @@ class Emulator:
 
         if self.Registers[vX].value == nn:
           self.pc += 2
-      
-      #Complete
+        
       case '4':
         #4xkk - skip the next instruction if Vx != kk, checks if Vx != kk if so increment PC by 2
         vX = int(opcode[1],16)
@@ -205,8 +201,7 @@ class Emulator:
 
         if self.Registers[vX].value != nn:
           self.pc += 2
-      
-      #Complete
+        
       case '5':
         #5xy0 - skip the next instruction if Vx = Vy, checks if Vx = Vy if so increment PC by 2
         vX = int(opcode[1],16)
@@ -214,36 +209,33 @@ class Emulator:
 
         if self.Registers[vX].value == self.Registers[vY].value:
           self.pc += 2
-      
-      #Complete
+          
       case '6':
         #6xnn - puts the value nn in register Vx
         vX = int(opcode[1],16)
         nn = int(opcode[2:],16)
 
         self.Registers[vX].value = nn
-
-      #Complete
+ 
       case '7':
         #7xnn - adds value nn to value in register Vx, stores it in Vx
         vX = int(opcode[1],16)
         nn = int(opcode[2:],16)
-        self.Registers[vX].value += vX
+        self.Registers[vX].value += nn
         self.Registers[vX].checkCarry()
-
-      #Complete
+    
       case '8': 
         #8xy0 8xy1 8xy2 8xy3 8xy4 8xy5 8xy6 8xy7 8xyE
 
         match pos4:
-          #Complete
+          
           case '0':
             #8xy0 - Set Vx = Vy, stores the value of register Vy in register Vx
             vX = int(opcode[1],16)
             vY = int(opcode[2],16)
             self.Registers[vX].value = self.Registers[vY].value
 
-          #Complete
+          
           case '1':
             #8xy1 - Set Vx = Vx OR Vy, Performs a bitwise OR on the values of Vx and Vy, then stores the result in Vx
             vX = int(opcode[1],16)
@@ -251,7 +243,7 @@ class Emulator:
 
             self.Registers[vX].value = self.Registers[vX].value | self.Registers[vY].value
           
-          #Complete
+          
           case '2':
             #8xy2 - Set Vx = Vx AND Vy, Performs a bitwise AND on the values of Vx and Vy, then stores the result in Vx
             vX = int(opcode[1],16)
@@ -259,7 +251,7 @@ class Emulator:
 
             self.Registers[vX].value = self.Registers[vX].value & self.Registers[vY].value
 
-          #Complete
+          
           case '3':
             #8xy3 - Set Vx = Vx XOR Vy, Performs a bitwise exclusive OR on the values of Vx and Vy, then stores the result in Vx
             vX = int(opcode[1],16)
@@ -267,7 +259,7 @@ class Emulator:
 
             self.Registers[vX].value = self.Registers[vX].value ^ self.Registers[vY].value
           
-          #Complete
+          
           case '4':
             #8xy4 - Set Vx = Vx + Vy, set VF = carry, The values of Vx and Vy are added together If the result is greater than 8 bits (i.e., > 255,) VF is set to 1, otherwise 0 Only the lowest 8 bits of the result are kept, and stored in Vx
             vX = int(opcode[1],16)
@@ -276,7 +268,7 @@ class Emulator:
             self.Registers[vX].value += self.Registers[vY].value
             self.Registers[0xf].value = self.Registers[vX].checkCarry()
 
-          #Complete
+          
           case '5':
             #8xy5 - Set Vx = Vx - Vy, set VF = NOT borrow, If Vx > Vy, then VF is set to 1, otherwise 0 Then Vy is subtracted from Vx, and the results stored in Vx
             vX = int(opcode[1],16)
@@ -285,7 +277,7 @@ class Emulator:
             self.Registers[vX].value -= self.Registers[vY].value
             self.Registers[0xf].value = self.Registers[vX].checkBorrow()
           
-          #Complete
+          
           case '6':
             #8xy6 - Set Vx = Vx SHR 1, If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0. Then Vx is divided by 2.
             vX = int(opcode[1],16)
@@ -294,7 +286,7 @@ class Emulator:
             self.Registers[vX].value = self.Registers[vX].value >> 1
             self.Registers[0xf].value = minBit
           
-          #Complete
+          
           case '7':
             #8xy7 - Set Vx = Vy - Vx, set VF = NOT borrow, If Vy > Vx, then VF is set to 1, otherwise 0. Then Vx is subtracted from Vy, and the results stored in Vx.
             vX = int(opcode[1],16)
@@ -303,7 +295,7 @@ class Emulator:
             self.Registers[vX].value = self.Registers[vY].value - self.Registers[vX].value 
             self.Registers[0xf].value = self.Registers[vX].checkBorrow()
 
-          #Complete
+          
           case 'e':
             #8xyE - Set Vx = Vx SHL 1, If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0. Then Vx is multiplied by 2.
             vX = int(opcode[1],16)
@@ -311,8 +303,7 @@ class Emulator:
 
             self.Registers[vX].value = self.Registers[vX].value << 1
             self.Registers[0xf].value = maxBit
-
-      #Complete
+  
       case '9':
         #9xy0 - Skip next instruction if Vx != Vy, The values of Vx and Vy are compared, and if they are not equal, the program counter is increased by 2.
         vX = int(opcode[1],16)
@@ -321,21 +312,18 @@ class Emulator:
         if self.Registers[vX].value != self.Registers[vY].value:
           self.pc += 2
       
-      #Complete
       case 'a':
         #Annn - Set I = nnn, The value of register I is set to nnn
         nnn = int(opcode[1:],16)
 
         self.KeyInputs.value = nnn
 
-      #Complete
       case 'b':
         #Bnnn - Jump to location nnn + V0, The program counter is set to nnn plus the value of V0
         nnn = int(opcode[1:],16)
 
         self.pc = self.Registers[0].value + nnn - 2
       
-      #Complete
       case 'c':
         #Cxnn - Set Vx = random byte AND nn, The interpreter generates a random number from 0 to 255, which is then ANDed with the value nn. The results are stored in Vx. See instruction 8xy2 for more information on AND 
         vX = int(opcode[1],16)
@@ -344,8 +332,7 @@ class Emulator:
         rand = random.randint(0,255)
 
         self.Registers[vX].value = nnn & rand
-      
-      #Complete
+            
       case 'd':
         #Dxyn - Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
         vX = int(opcode[1],16)
@@ -363,14 +350,13 @@ class Emulator:
           self.Registers[0xf].value = 1
         else:
           self.Registers[0xf].value = 0
-
-      #Complete
+      
       case 'e':
         #Ex9E ExA1
 
         match pos4:
           
-          #Complete
+          
           case 'e':
             #Ex9E - Skip next instruction if key with the value of Vx is pressed
             vX = int(opcode[1],16)
@@ -378,27 +364,26 @@ class Emulator:
             if self.keys[key]:
               self.pc += 2
           
-          #Complete
+          
           case '1':
             #ExA1 - Skip next instruction if key with the value of Vx is not pressed
             vX = int(opcode[1],16)
             key = self.Registers[vX].value
             if not self.keys[key]:
               self.pc += 2
-
-      #Complete
+      
       case 'f':
         #Fx07 Fx0A Fx18 Fx1E Fx29 Fx33 Fx15 Fx55 Fx65
 
           match pos4:
             
-            #Complete
+            
             case '7':
               #Fx07 - Set Vx = delay timer value
               vX = int(opcode[1],16)
               self.Registers[vX].value = self.delayTimer.readTimer()
             
-            #Complete
+            
             case 'a':
               #Fx0A - Wait for a key press, store the value of the key in Vx.
               vX = int(opcode[1],16)
@@ -418,20 +403,20 @@ class Emulator:
 
               self.Registers[vX].value = key
             
-            #Complete
+            
             case '8':
               #Fx18 - Set sound timer = Vx
               vX = int(opcode[1],16)
               val = self.Registers[vX].value
               self.soundTimer.setTimer(val)
             
-            #Complete
+            
             case 'e':
               #Fx1e - Set I = I + Vx
               vX = int(opcode[1],16)
               self.KeyInputs.value += self.Registers[vX].value
             
-            #Complete
+            
             case '9':
               #Fx29 - Set I = location of sprite for digit Vx
               vX = int(opcode[1],16)
@@ -439,7 +424,7 @@ class Emulator:
 
               self.KeyInputs.value = value * 5
             
-            #Complete
+            
             case '3':
               #Fx33 - Store BCD representation of Vx in memory locations I, I+1, and I+2
               vX = int(opcode[1],16)
@@ -451,13 +436,13 @@ class Emulator:
               for i in range(len(val)):
                 self.Memory[self.KeyInputs.value + i] = int(val[i])
             
-            #Complete
+            
             case '5':
               #Fx15 Fx55 Fx65
 
               match pos3:
                 
-                #Complete
+                
                 case '1':
                   #Fx15 - Set delay timer = Vx
                   vX = int(opcode[1],16)
@@ -465,14 +450,14 @@ class Emulator:
 
                   self.delayTimer.setTimer(val)
 
-                #Complete
+                
                 case '5':
                   #Fx55 - Store registers V0 through Vx in memory starting at location I
                   vX = int(opcode[1],16)
                   for i in range(0, vX + 1):
                     self.Memory[self.KeyInputs.value + i] = self.Registers[i].value
                 
-                #Complete
+                
                 case '6':
                   #Fx65 - Read registers V0 through Vx from memory starting at location I
                   vX = int(opcode[1],16)
@@ -507,9 +492,10 @@ class Emulator:
     for i in range(len(spriteBits)):
       for j in range(8):
         try:
-          if self.grid[Vy + i][Vx + j] == 1 and int(spriteBit[i][j]) == 1:
+          if self.grid[Vy + i][Vx + j] == 1 and int(spriteBits[i][j]) == 1:
             collision = True
           
+          self.grid[Vy + i][Vx + j] = self.grid[Vy + i][Vx + j] ^ int(spriteBits[i][j])
         except:
           continue
     
