@@ -66,7 +66,7 @@ class DelayTimer:
   def readTimer(self):
     return self.timer
 
-class SoundTimer:
+class SoundTimer(DelayTimer):
   def __init__ (self):
     DelayTimer.__init__(self)
 
